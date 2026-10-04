@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% load static %}
+{% block title %}About us - Fruitboss{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title="About us" %}
+<section class="ftco-section ftco-no-pb ftco-no-pt bg-light">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-5 p-md-5 img img-2 d-flex justify-content-center align-items-center" style="background-image: url({% static 'images/about.jpg' %}); min-height: 280px;"></div>
+      <div class="col-md-7 py-5 wrap-about pb-md-5 ftco-animate">
+        <div class="heading-section-bold mb-4 mt-md-5"><div class="ml-md-0"><h2 class="mb-4">Welcome to Fruitboss</h2></div></div>
+        <div class="pb-md-5">
+          <p>We offer daily delivery of fresh fruits across Nigeria. Place an order online and we'll get it to your door.</p>
+          <p>Questions about an order? Reach us any time on {{ SHOP.PHONE }} or at {{ SHOP.EMAIL }}.</p>
+          <p><a href="{% url 'store:shop' %}" class="btn btn-primary">Shop now</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

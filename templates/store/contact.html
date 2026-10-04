@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Contact us - Fruitboss{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title="Contact us" %}
+<section class="ftco-section contact-section bg-light">
+  <div class="container">
+    <div class="row d-flex mb-5 contact-info">
+      <div class="col-md-4 d-flex mb-3"><div class="info bg-white p-4 w-100"><p><span>Address:</span> {{ SHOP.ADDRESS }}</p></div></div>
+      <div class="col-md-4 d-flex mb-3"><div class="info bg-white p-4 w-100"><p><span>Phone:</span> <a href="tel:{{ SHOP.PHONE|cut:' ' }}">{{ SHOP.PHONE }}</a></p></div></div>
+      <div class="col-md-4 d-flex mb-3"><div class="info bg-white p-4 w-100"><p><span>Email:</span> <a href="mailto:{{ SHOP.EMAIL }}">{{ SHOP.EMAIL }}</a></p></div></div>
+    </div>
+    <div class="row justify-content-center block-9">
+      <div class="col-md-8">
+        <form method="post" class="bg-white p-4 p-md-5 contact-form" novalidate>
+          {% csrf_token %}
+          {% for f in form %}
+          <div class="form-group">
+            {{ f }}
+            {% for e in f.errors %}<small class="text-danger">{{ e }}</small>{% endfor %}
+          </div>
+          {% endfor %}
+          <div class="form-group"><input type="submit" value="Send Message" class="btn btn-primary py-3 px-5"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

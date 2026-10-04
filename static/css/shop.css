@@ -1,0 +1,57 @@
+/* Shop additions on top of the Vegefoods template (style.css) */
+
+/* Product action buttons are <button>s inside forms; style them like the template's <a> icons */
+.product .text .bottom-area button {
+  color: #fff; background: #82ae46; width: 40px; height: 40px; margin: 0 auto; padding: 0;
+  border: 0; border-radius: 50%; cursor: pointer;
+}
+.product .text .bottom-area button span, .product .text .bottom-area button i { color: #fff; }
+.product .text .bottom-area button:disabled { background: #bbb; cursor: not-allowed; }
+.product .text .bottom-area button.heart { background: #ccc; }
+.product .text .bottom-area button.heart.is-saved { background: #e5484d; }
+.product .text .bottom-area form { margin: 0; }
+.product .price small { font-size: 12px; }
+.product .status.sold-out { background: #555; left: auto; right: 10px; }
+
+/* Touch devices and phones have no hover: keep the action buttons visible */
+@media (hover: none), (max-width: 991.98px) {
+  .product .text .bottom-area { opacity: 1; position: static; margin-top: 10px; }
+  .product .pricing { opacity: 1 !important; position: static; }
+  .product .text { padding-bottom: 1rem !important; }
+}
+
+.img-prod img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.no-image { display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; background: #f1f5ea; color: #82ae46; font-size: 48px; }
+.no-image-lg { min-height: 320px; }
+
+/* Nav search + counters */
+.nav-search .form-control { background: rgba(255,255,255,.12); border: 0; color: #fff; border-radius: 20px; padding: 0 16px; height: 36px; }
+.nav-search .form-control::placeholder { color: rgba(255,255,255,.7); }
+@media (max-width: 991.98px) { .nav-search { width: 100%; } .nav-search .form-control { width: 100%; } }
+.badge-count { font-size: 12px; }
+
+/* Toasts / flash messages */
+.toast-stack { position: fixed; top: 16px; right: 16px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; max-width: calc(100vw - 32px); }
+.toast-msg { background: #333; color: #fff; padding: 12px 18px; border-radius: 6px; box-shadow: 0 4px 14px rgba(0,0,0,.2); font-size: 14px; transition: opacity .4s; }
+.toast-success { background: #4f7a1f; }
+.toast-error { background: #c0392b; }
+.toast-warning { background: #b9770e; }
+
+/* Forms rendered by Django */
+.billing-form input[type=text], .billing-form input[type=email], .billing-form select, .billing-form textarea,
+.contact-form input[type=text], .contact-form input[type=email], .contact-form textarea { width: 100%; }
+.billing-form select.form-control { height: 56px; }
+.checkbox input, .radio input { width: auto; height: auto; }
+.cart-list .quantity input { max-width: 90px; margin: 0 auto; text-align: center; }
+.cart-list .product-remove button { color: #bbb; font-size: 22px; }
+.shop-toolbar .form-control { height: 44px; }
+.product-details input[type=number]::-webkit-inner-spin-button { display: none; }
+
+/* Cart table: stack on small screens */
+@media (max-width: 767.98px) {
+  .cart-list { overflow-x: auto; }
+  .hero-wrap.hero-bread { height: 220px; }
+}
+
+/* Make sure revealed blocks are visible even if the keyframes do not set visibility */
+.ftco-animate.ftco-animated { visibility: visible; opacity: 1; }

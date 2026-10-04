@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Wishlist - Fruitboss{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title="Wishlist" %}
+<section class="ftco-section">
+  <div class="container">
+    <div class="row">
+      {% for product in products %}{% include "partials/product_card.html" %}{% empty %}
+      <div class="col-12 text-center py-5">
+        <h3>Your wishlist is empty</h3>
+        <p class="mb-4">Tap the heart on any product to save it for later.</p>
+        <a href="{% url 'store:shop' %}" class="btn btn-primary py-3 px-5">Browse the shop</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

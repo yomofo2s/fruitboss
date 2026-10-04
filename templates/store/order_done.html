@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% load shop_extras %}
+{% block title %}Order {{ order.reference }} - Fruitboss{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title="Thank you!" %}
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center"><div class="col-lg-8">
+      <div class="text-center mb-5">
+        {% if order.status == 'cancelled' %}
+        <h3>This order was cancelled</h3>
+        <p>Order reference: <strong>{{ order.reference }}</strong>. It was not paid in time. Please place a new order.</p>
+        {% elif order.payment_method == 'card' and not order.paid %}
+        <h3>Payment pending</h3>
+        <p>Order reference: <strong>{{ order.reference }}</strong>. Your order will be confirmed once payment is complete. Unpaid orders are released after {{ SHOP.UNPAID_ORDER_MINUTES }} minutes.</p>
+        {% if SHOP.PAYSTACK_ENABLED %}
+        <form method="post" action="{% url 'store:order_pay' order.reference %}">{% csrf_token %}<button type="submit" class="btn btn-primary py-3 px-5">Pay {{ order.total|naira }} now</button></form>
+        {% endif %}
+        {% else %}
+        <h3>Your order has been placed</h3>
+        <p>Order reference: <strong>{{ order.reference }}</strong>. A confirmation has been sent to {{ order.email }}.</p>
+        {% endif %}
+      </div>
+      <div class="cart-total p-4 mb-4">
+        {% for item in order.items.all %}<p class="d-flex"><span>{{ item.quantity }} x {{ item.name }}</span><span>{{ item.line_total|naira }}</span></p>{% endfor %}
+        <hr>
+        <p class="d-flex"><span>Subtotal</span><span>{{ order.subtotal|naira }}</span></p>
+        <p class="d-flex"><span>Delivery</span><span>{% if order.delivery_fee %}{{ order.delivery_fee|naira }}{% else %}Free{% endif %}</span></p>
+        <p class="d-flex total-price"><span>Total</span><span>{{ order.total|naira }}</span></p>
+      </div>
+      <p><strong>Deliver to:</strong> {{ order.full_name }}, {{ order.address }}, {{ order.city }}, {{ order.state }} ({{ order.phone }})</p>
+      <p><strong>Payment:</strong> {{ order.get_payment_method_display }}{% if order.paid %} - <span class="text-success">paid</span>{% endif %}.
+      {% if order.payment_method == 'transfer' %}Please transfer {{ order.total|naira }} to: {{ SHOP.BANK_DETAILS }}. Use <strong>{{ order.reference }}</strong> as the payment reference.{% endif %}</p>
+      <p class="text-center mt-5"><a href="{% url 'store:shop' %}" class="btn btn-primary py-3 px-5">Continue shopping</a></p>
+    </div></div>
+  </div>
+</section>
+{% endblock %}

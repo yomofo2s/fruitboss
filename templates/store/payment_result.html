@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Payment - Fruitboss{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title="Payment" %}
+<section class="ftco-section">
+  <div class="container text-center py-4">
+    {% if order.paid %}
+    <h3>Payment received</h3>
+    <p>Thank you! Order <strong>{{ order.reference }}</strong> is confirmed and we've emailed you the details.</p>
+    {% else %}
+    <h3>Payment not completed</h3>
+    <p>Order <strong>{{ order.reference }}</strong> hasn't been paid yet. If you were charged, it will be confirmed automatically in a few minutes.</p>
+    {% endif %}
+    <a href="{% url 'store:shop' %}" class="btn btn-primary py-3 px-5 mt-3">Continue shopping</a>
+  </div>
+</section>
+{% endblock %}

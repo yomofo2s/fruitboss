@@ -1,0 +1,42 @@
+{% load shop_extras %}
+<div class="col-md-6 col-lg-3 ftco-animate">
+  <div class="product">
+    <a href="{{ product.get_absolute_url }}" class="img-prod">
+      {% if product.image %}<img class="img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">{% else %}<div class="no-image"><span class="icon-shopping_cart"></span></div>{% endif %}
+      {% if product.on_sale %}<span class="status">{{ product.discount_percent }}%</span>{% endif %}
+      {% if not product.in_stock %}<span class="status sold-out">Sold out</span>{% endif %}
+      <div class="overlay"></div>
+    </a>
+    <div class="text py-3 pb-4 px-3 text-center">
+      <h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+      <div class="d-flex">
+        <div class="pricing">
+          <p class="price">
+            {% if product.on_sale %}<span class="mr-2 price-dc">{{ product.price|naira }}</span><span class="price-sale">{{ product.sale_price|naira }}</span>
+            {% else %}<span>{{ product.price|naira }}</span>{% endif %}
+            <small class="text-muted">/ {{ product.unit }}</small>
+          </p>
+        </div>
+      </div>
+      <div class="bottom-area d-flex px-3">
+        <div class="m-auto d-flex">
+          <a href="{{ product.get_absolute_url }}" class="add-to-cart d-flex justify-content-center align-items-center text-center" title="View details" aria-label="View details">
+            <span><i class="ion-ios-menu"></i></span>
+          </a>
+          <form method="post" action="{% url 'store:cart_add' product.pk %}" class="js-cart-form m-0">
+            {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="buy-now d-flex justify-content-center align-items-center mx-1" title="Add to cart" aria-label="Add {{ product.name }} to cart" {% if not product.in_stock %}disabled{% endif %}>
+              <span><i class="ion-ios-cart"></i></span>
+            </button>
+          </form>
+          <form method="post" action="{% url 'store:wishlist_toggle' product.pk %}" class="js-wish-form m-0">
+            {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="heart d-flex justify-content-center align-items-center {% if product.pk in wishlist_ids %}is-saved{% endif %}" title="Wishlist" aria-label="Toggle wishlist for {{ product.name }}">
+              <span><i class="ion-ios-heart"></i></span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

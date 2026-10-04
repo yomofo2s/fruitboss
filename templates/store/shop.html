@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% load shop_extras %}
+{% block title %}{% if category %}{{ category.name }}{% else %}Shop{% endif %} - Fruitboss{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title="Products" %}
+<section class="ftco-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-10 mb-4 text-center">
+        <ul class="product-category">
+          <li><a href="{% url 'store:shop' %}{% if q %}?q={{ q|urlencode }}{% endif %}" class="{% if not category %}active{% endif %}">All</a></li>
+          {% for c in categories %}
+          <li><a href="?category={{ c.slug }}{% if q %}&q={{ q|urlencode }}{% endif %}" class="{% if category == c %}active{% endif %}">{{ c.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <form method="get" class="row justify-content-between align-items-center mb-4 shop-toolbar">
+      {% if category %}<input type="hidden" name="category" value="{{ category.slug }}">{% endif %}
+      <div class="col-md-6 mb-2">
+        <input type="search" name="q" value="{{ q }}" class="form-control" placeholder="Search products" aria-label="Search products">
+      </div>
+      <div class="col-md-4 mb-2">
+        <select name="sort" class="form-control" onchange="this.form.submit()" aria-label="Sort products">
+          {% for key, label in sorts %}<option value="{{ key }}" {% if key == sort %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+    </form>
+    <p class="text-muted">{{ page.paginator.count }} product{{ page.paginator.count|pluralize }}{% if q %} for "{{ q }}"{% endif %}</p>
+    <div class="row">
+      {% for product in page %}{% include "partials/product_card.html" %}{% empty %}
+      <div class="col-12 text-center py-5"><p>No products found. <a href="{% url 'store:shop' %}">Clear filters</a></p></div>
+      {% endfor %}
+    </div>
+    {% if page.has_other_pages %}
+    <div class="row mt-5"><div class="col text-center"><div class="block-27"><ul>
+      {% if page.has_previous %}<li><a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.previous_page_number }}">&lt;</a></li>{% endif %}
+      {% for n in page.paginator.page_range %}
+        {% if n == page.number %}<li class="active"><span>{{ n }}</span></li>
+        {% else %}<li><a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ n }}">{{ n }}</a></li>{% endif %}
+      {% endfor %}
+      {% if page.has_next %}<li><a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.next_page_number }}">&gt;</a></li>{% endif %}
+    </ul></div></div></div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

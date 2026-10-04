@@ -1,0 +1,59 @@
+{% extends "base.html" %}{% load shop_extras %}
+{% block title %}Checkout - Fruitboss{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title="Checkout" %}
+<section class="ftco-section">
+  <div class="container">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="row justify-content-center">
+        <div class="col-xl-7 ftco-animate billing-form">
+          <h3 class="mb-4 billing-heading">Delivery Details</h3>
+          {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+          <div class="row align-items-end">
+            {% for f in form %}{% if f.name not in "payment_method,accept_terms" %}
+            <div class="col-md-{% if f.name in 'full_name,email,phone,city,state' %}6{% else %}12{% endif %}">
+              <div class="form-group">
+                <label for="{{ f.id_for_label }}">{{ f.label }}{% if f.field.required %} *{% endif %}</label>
+                {{ f }}
+                {% for e in f.errors %}<small class="text-danger d-block">{{ e }}</small>{% endfor %}
+              </div>
+            </div>
+            {% endif %}{% endfor %}
+          </div>
+        </div>
+        <div class="col-xl-5">
+          <div class="row mt-5 pt-3">
+            <div class="col-md-12 d-flex mb-5">
+              <div class="cart-detail cart-total p-3 p-md-4 w-100">
+                <h3 class="billing-heading mb-4">Your Order</h3>
+                {% for line in lines %}<p class="d-flex"><span>{{ line.quantity }} x {{ line.product.name }}</span><span>{{ line.total|naira }}</span></p>{% endfor %}
+                <hr>
+                <p class="d-flex"><span>Subtotal</span><span>{{ subtotal|naira }}</span></p>
+                <p class="d-flex"><span>Delivery</span><span>{% if delivery_fee %}{{ delivery_fee|naira }}{% else %}Free{% endif %}</span></p>
+                <hr>
+                <p class="d-flex total-price"><span>Total</span><span>{{ total|naira }}</span></p>
+                <p class="mb-0"><a href="{% url 'store:cart' %}">Edit cart</a></p>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="cart-detail p-3 p-md-4">
+                <h3 class="billing-heading mb-4">Payment Method</h3>
+                {% for radio in form.payment_method %}
+                <div class="form-group"><div class="col-md-12"><div class="radio"><label>{{ radio.tag }} <span class="ml-2">{{ radio.choice_label }}</span></label></div></div></div>
+                {% endfor %}
+                {% if SHOP.PAYSTACK_ENABLED %}<p class="small text-muted px-3" id="card-note">Online payment: you'll be taken to Paystack to pay securely by card, bank transfer or USSD.</p>{% endif %}
+                <p class="small text-muted px-3" id="bank-details">Bank transfer details: {{ SHOP.BANK_DETAILS }}. Use your order reference as the payment reference.</p>
+                {% for e in form.payment_method.errors %}<small class="text-danger d-block">{{ e }}</small>{% endfor %}
+                <div class="form-group"><div class="col-md-12"><div class="checkbox"><label>{{ form.accept_terms }} <span class="ml-2">I accept the terms and conditions</span></label></div>
+                  {% for e in form.accept_terms.errors %}<small class="text-danger d-block">{{ e }}</small>{% endfor %}</div></div>
+                <p><button type="submit" class="btn btn-primary py-3 px-4">Place order</button></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

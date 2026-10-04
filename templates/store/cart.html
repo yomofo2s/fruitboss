@@ -1,0 +1,59 @@
+{% extends "base.html" %}{% load shop_extras %}
+{% block title %}Your cart - Fruitboss{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title="My Cart" %}
+<section class="ftco-section ftco-cart">
+  <div class="container">
+    {% if lines %}
+    <div class="row">
+      <div class="col-md-12 ftco-animate">
+        <div class="cart-list">
+          <table class="table">
+            <thead class="thead-primary"><tr class="text-center"><th>&nbsp;</th><th>&nbsp;</th><th>Product name</th><th>Price</th><th>Quantity</th><th>Total</th></tr></thead>
+            <tbody>
+              {% for line in lines %}{% with p=line.product %}
+              <tr class="text-center">
+                <td class="product-remove">
+                  <form method="post" action="{% url 'store:cart_remove' p.pk %}">{% csrf_token %}<button type="submit" class="btn btn-link p-0" aria-label="Remove {{ p.name }}"><span class="ion-ios-close"></span></button></form>
+                </td>
+                <td class="image-prod"><div class="img" style="background-image:url({% if p.image %}{{ p.image.url }}{% endif %});"></div></td>
+                <td class="product-name"><h3><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></h3><p>{{ p.category.name }}</p></td>
+                <td class="price">{{ p.current_price|naira }} <small>/ {{ p.unit }}</small></td>
+                <td class="quantity">
+                  <form method="post" action="{% url 'store:cart_update' p.pk %}" class="input-group mb-3 js-qty-form">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" class="quantity form-control input-number" value="{{ line.quantity }}" min="0" max="{{ p.stock }}" aria-label="Quantity of {{ p.name }}">
+                    <noscript><button class="btn btn-sm btn-primary">Update</button></noscript>
+                  </form>
+                </td>
+                <td class="total">{{ line.total|naira }}</td>
+              </tr>
+              {% endwith %}{% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-end">
+      <div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+        <div class="cart-total mb-3">
+          <h3>Cart Totals</h3>
+          <p class="d-flex"><span>Subtotal</span><span>{{ subtotal|naira }}</span></p>
+          <p class="d-flex"><span>Delivery</span><span>{% if delivery_fee %}{{ delivery_fee|naira }}{% else %}Free{% endif %}</span></p>
+          {% if delivery_fee %}<p class="small text-muted">Spend {{ SHOP.FREE_DELIVERY_THRESHOLD|naira }} or more for free delivery.</p>{% endif %}
+          <hr>
+          <p class="d-flex total-price"><span>Total</span><span>{{ total|naira }}</span></p>
+        </div>
+        <p><a href="{% url 'store:checkout' %}" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+      </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+      <h3>Your cart is empty</h3>
+      <p class="mb-4">Add some fresh fruit to get started.</p>
+      <a href="{% url 'store:shop' %}" class="btn btn-primary py-3 px-5">Browse the shop</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

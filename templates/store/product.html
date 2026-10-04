@@ -1,0 +1,54 @@
+{% extends "base.html" %}{% load shop_extras %}
+{% block title %}{{ product.name }} - Fruitboss{% endblock %}
+{% block description %}{{ product.description|truncatechars:150|default:product.name }}{% endblock %}
+{% block content %}
+{% include "partials/hero.html" with title=product.name %}
+<section class="ftco-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 mb-5 ftco-animate">
+        {% if product.image %}<a href="{{ product.image.url }}" class="image-popup"><img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}"></a>
+        {% else %}<div class="no-image no-image-lg"><span class="icon-shopping_cart"></span></div>{% endif %}
+      </div>
+      <div class="col-lg-6 product-details pl-md-5 ftco-animate">
+        <h3>{{ product.name }}</h3>
+        <p class="text-muted mb-1"><a href="{% url 'store:shop' %}?category={{ product.category.slug }}">{{ product.category.name }}</a></p>
+        <p class="price">
+          {% if product.on_sale %}<span class="mr-2 price-dc">{{ product.price|naira }}</span><span>{{ product.sale_price|naira }}</span> <small>({{ product.discount_percent }}% off)</small>
+          {% else %}<span>{{ product.price|naira }}</span>{% endif %}
+          <small class="text-muted">/ {{ product.unit }}</small>
+        </p>
+        <p>{{ product.description|linebreaksbr }}</p>
+        {% if product.in_stock %}
+        <form method="post" action="{% url 'store:cart_add' product.pk %}" class="js-cart-form">
+          {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <div class="row mt-4">
+            <div class="input-group col-md-6 d-flex mb-3">
+              <span class="input-group-btn mr-2"><button type="button" class="quantity-left-minus btn" aria-label="Decrease quantity"><i class="ion-ios-remove"></i></button></span>
+              <input type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="{{ product.stock }}" aria-label="Quantity">
+              <span class="input-group-btn ml-2"><button type="button" class="quantity-right-plus btn" aria-label="Increase quantity"><i class="ion-ios-add"></i></button></span>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-md-12"><p style="color: #000;">{% if product.stock <= 10 %}Only {{ product.stock }} {{ product.unit }} left{% else %}{{ product.stock }} {{ product.unit }} available{% endif %}</p></div>
+          </div>
+          <p>
+            <button type="submit" class="btn btn-black py-3 px-5 mr-2">Add to Cart</button>
+            <button type="submit" name="buy_now" value="1" class="btn btn-primary py-3 px-5">Buy now</button>
+          </p>
+        </form>
+        {% else %}<p class="text-danger font-weight-bold">Out of stock</p>{% endif %}
+        <form method="post" action="{% url 'store:wishlist_toggle' product.pk %}" class="js-wish-form">
+          {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button type="submit" class="btn btn-link p-0">{% if product.pk in wishlist_ids %}Remove from wishlist{% else %}Add to wishlist{% endif %}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% if related %}
+<section class="ftco-section">
+  <div class="container"><div class="row justify-content-center mb-3 pb-3"><div class="col-md-12 heading-section text-center ftco-animate"><span class="subheading">Products</span><h2 class="mb-4">Related Products</h2></div></div></div>
+  <div class="container"><div class="row">{% for product in related %}{% include "partials/product_card.html" %}{% endfor %}</div></div>
+</section>
+{% endif %}
+{% endblock %}
