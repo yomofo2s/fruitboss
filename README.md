@@ -42,16 +42,22 @@ How it works: checkout creates the order (stock reserved) and sends the customer
 
 ## Deploying
 
-```bash
-pip install -r requirements.txt
-python manage.py collectstatic --noinput
-python manage.py migrate
-gunicorn fruitbossng.wsgi
-```
+Production runs on a Hetzner VPS: nginx (Let's Encrypt HTTPS) -> gunicorn -> Django + SQLite, with media on the server's disk.
+Every push to `master` that passes CI deploys automatically (`.github/workflows/deploy.yml`). Setup steps, DNS notes
+(delete stale `AAAA` records before requesting the certificate) and the server layout are in [`deploy/README.md`](deploy/README.md).
 
-Static files are served by WhiteNoise. **Uploaded product photos live in `MEDIA_ROOT`**, which Django only serves in
-development: in production put it on a persistent disk behind your web server (or move to object storage), and use a
-real database (the default is SQLite) if you run more than one instance.
+Values in `/etc/fruitboss.env` that contain spaces or special characters must be quoted, because `deploy.sh` sources the file in bash.
+
+## Testing an order
+
+1. Put a `sk_test_...` key in `PAYSTACK_SECRET_KEY` (`/etc/fruitboss.env`, then `systemctl restart fruitboss`).
+2. Add products to the cart, go to `/checkout/`, fill in the details and choose **Pay online**.
+3. On the Paystack page use a test card, e.g. `4084 084 084 084 084`, any future expiry, CVV `408`, PIN `0000`, OTP `123456`.
+4. You should land on the order page marked paid. In `/admin/` the order shows paid with a Payment row, stock is reduced,
+   and the confirmation emails go out (or appear in `journalctl -u fruitboss` if `EMAIL_HOST` is unset).
+5. Also try **Pay on delivery** and **Bank transfer**, and abandon a payment: `expire_orders` (cron, every 5 min) cancels it after
+   `SHOP_UNPAID_ORDER_MINUTES` and restores the stock.
+6. Switch to the `sk_live_...` key only when the test run is clean.
 
 ## Not included yet
 
