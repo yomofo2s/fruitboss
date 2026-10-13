@@ -1,0 +1,19 @@
+[Unit]
+Description=Fruitboss (gunicorn)
+After=network.target
+
+[Service]
+User=fruitboss
+Group=www-data
+WorkingDirectory=/srv/fruitboss/app
+EnvironmentFile=/etc/fruitboss.env
+RuntimeDirectory=fruitboss
+RuntimeDirectoryMode=0750
+ExecStart=/srv/fruitboss/venv/bin/gunicorn fruitbossng.wsgi \
+    --bind unix:/run/fruitboss/gunicorn.sock --umask 007 \
+    --workers 3 --timeout 30 --access-logfile -
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
